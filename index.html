@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Invitación XV</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f8f8;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1, h2 {
+      margin: 20px 0;
+    }
+
+    button {
+      background: #d63384;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    /* ===== VISOR GRANDE ===== */
+    .visor {
+      width: 100%;
+      max-width: 420px;
+      height: 420px;
+      margin: 0 auto 25px;
+      background: black;
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .visor img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* ===== GALERÍA ===== */
+    .galeria {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+    }
+
+    .foto-item {
+      position: relative;
+      width: 100%;
+      height: 120px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .foto-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .btn-eliminar {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: rgba(220,20,60,0.85);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>📸 Subí tu foto</h1>
+
+<div class="visor">
+  <img id="visorImg" src="" alt="">
+</div>
+
+<input type="file" id="fileInput" accept="image/*" hidden>
+<button id="btnSubir">📸 Subí tu foto</button>
+
+<h2>🖼️ Recuerdos</h2>
+<div id="galeria" class="galeria"></div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+/* ================= CONFIG ================= */
+
+// 👉 PONÉ true SOLO EN TU CELU
+const ES_ORGANIZADOR = true;
+const CLAVE_ORGANIZADOR = "clari15";
+
+/* ================= FIREBASE ================= */
+
+firebase.initializeApp({
+  apiKey: "AIzaSyDwuP4lEqYSXzuccATa_s3QzfUKpWIVq_g",
+  authDomain: "clari-xv.firebaseapp.com",
+  projectId: "clari-xv",
+  storageBucket: "clari-xv.firebasestorage.app",
+  appId: "1:760531084277:web:f1ca4ce5fbe20a9ce3b6bc"
+});
+
+const storage = firebase.storage();
+const db = firebase.firestore();
+
+/* ================= DOM ================= */
+
+const fileInput = document.getElementById("fileInput");
+const btnSubir = document.getElementById("btnSubir");
+const galeria = document.getElementById("galeria");
+const visorImg = document.getElementById("visorImg");
+
+btnSubir.onclick = () => fileInput.click();
+fileInput.onchange = subirFoto;
+
+/* ================= SUBIR FOTO ================= */
+
+async function subirFoto() {
+  const file = fileInput.files[0];
+  if (!file || !file.type.startsWith("image/")) return;
+
+  const path = "fotos/" + Date.now() + "_" + file.name;
+  const ref = storage.ref(path);
+
+  const snap = await ref.put(file);
+  const url = await snap.ref.getDownloadURL();
+
+  await db.collection("fotos").add({
+    url,
+    fullPath: path,
+    fecha: new Date()
+  });
+
+  fileInput.value = "";
+}
+
+/* ================= ELIMINAR ================= */
+
+async function eliminarFoto(docId, fullPath) {
+  const clave = prompt("Clave de administrador");
+  if (clave !== CLAVE_ORGANIZADOR) return alert("❌ Clave incorrecta");
+  if (!confirm("¿Eliminar foto definitivamente?")) return;
+
+  await storage.ref(fullPath).delete();
+  await db.collection("fotos").doc(docId).delete();
+}
+
+/* ================= SLIDESHOW ================= */
+
+let fotos = [];
+let interval = null;
+
+function iniciarSlideshow() {
+  if (interval) clearInterval(interval);
+
+  if (fotos.length === 0) {
+    visorImg.src = "";
+    return;
+  }
+
+  visorImg.src = fotos[Math.floor(Math.random() * fotos.length)];
+
+  interval = setInterval(() => {
+    visorImg.src = fotos[Math.floor(Math.random() * fotos.length)];
+  }, 4000);
+}
+
+/* ================= GALERÍA ================= */
+
+db.collection("fotos")
+  .orderBy("fecha", "desc")
+  .onSnapshot(snapshot => {
+    galeria.innerHTML = "";
+    fotos = [];
+
+    snapshot.forEach(doc => {
+      const { url, fullPath } = doc.data();
+      fotos.push(url);
+
+      const cont = document.createElement("div");
+      cont.className = "foto-item";
+
+      const img = document.createElement("img");
+      img.src = url;
+      img.onerror = () => cont.remove();
+
+      cont.appendChild(img);
+
+      if (ES_ORGANIZADOR) {
+        const btn = document.createElement("button");
+        btn.className = "btn-eliminar";
+        btn.textContent = "✕";
+        btn.onclick = () => eliminarFoto(doc.id, fullPath);
+        cont.appendChild(btn);
+      }
+
+      galeria.appendChild(cont);
+    });
+
+    iniciarSlideshow();
+  });
+</script>
+
+</body>
+</html>
