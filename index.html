@@ -4,9 +4,19 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Los XV de Clari</title>
+  <style>
+    /* sin márgenes y la imagen se adapta al ancho del dispositivo */
+    html, body { margin: 0; }
+    img {
+      display: block;
+      width: 100%;
+      height: auto;   /* mantiene proporción, sin recortes ni deformación */
+    }
+  </style>
 </head>
-<body style="margin:0">
-  <!-- Mostramos la imagen tal cual, sin filtros, recortes ni escalado forzado -->
+<body>
+  <!-- Mostramos la imagen tal cual, solo ajustando tamaño en pantallas chicas -->
   <img src="1.png" alt="Los XV de Clari">
 </body>
 </html>
+
