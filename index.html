@@ -2,94 +2,144 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <!-- viewport-fit=cover usa todo el alto útil en iPhone (con notch) -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Los XV de Clari</title>
 
-  <!-- 🔤 Fuente elegante tipo Didona (similar a la del arte) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+  <!-- Fuente elegante similar a la del arte para los números -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet"/>
 
   <style>
     :root{
-      /* 🔧 Ajustes del contador (más chico) */
-      --countdown-font: clamp(15px, 4.5vw, 28px);    /* ↓ reducido para que entre cómodo */
-      --countdown-pad-y: clamp(6px, 1.6vw, 10px);    /* ↓ menos padding */
-      --countdown-pad-x: clamp(10px, 3.2vw, 16px);
-      --countdown-bottom: clamp(8px, 4.2vw, 28px);   /* un poco más arriba del borde */
-      --countdown-color: #000;                       /* texto negro */
+      /* POSICIÓN del contador en la imagen 2 (desde el borde superior) */
+      --countdown-top: 62%;
+
+      /* Tamaños (ajustados para que quepa dentro del arte) */
+      --num-size: clamp(24px, 8vw, 48px);
+      --label-size: clamp(14px, 4vw, 16px);
+
+      /* Separaciones */
+      --gap-x: .45em;
+      --sep-space: .15em;
+
+      /* Color y realces sutiles para legibilidad sin “pintar” el fondo */
+      --text-color: #000;
+      --stroke-color: rgba(255,255,255,.75); /* contorno claro (si lo soporta) */
+      --shadow: 0 1px 1px rgba(255,255,255,.35);
     }
 
-    /* Sin márgenes y sin espacios entre imágenes */
+    /* Reset */
     html, body { margin: 0; background: #ffffff; }
+    img { display:block; width:100%; height:auto; border:0; margin:0; padding:0; }
+    figure { margin: 0; }            /* <- evita diferencias en la imagen 2 */
 
-    /* Cada imagen ocupa todo el ancho, conserva proporción y elimina huecos */
-    img { display: block; width: 100%; height: auto; margin: 0; padding: 0; border: 0; }
-
-    /* Contenedor de la segunda imagen para superponer el contador */
+    /* ====== CONTADOR (overlay transparente en la imagen 2) ====== */
     .foto2 { position: relative; }
-
-    /* Contador superpuesto: transparente, compacto y siempre una línea */
-    .countdown-card {
+    .countdown {
       position: absolute;
       left: 50%;
-      transform: translateX(-50%) translateZ(0);
-      bottom: calc(env(safe-area-inset-bottom, 0px) + var(--countdown-bottom));
+      top: var(--countdown-top);              /* debajo de “FALTAN:” */
+      transform: translateX(-50%);            /* centrado horizontal */
       z-index: 2;
 
-      /* SIN fondo, SIN borde, SIN blur → se ve el fondo de la imagen */
+      /* Fondo 100% transparente: se ve la imagen */
       background: transparent;
-      border: 0;
-      padding: var(--countdown-pad-y) var(--countdown-pad-x);
+      color: var(--text-color);
 
-      color: var(--countdown-color);
-      font-weight: 700;
-      font-size: var(--countdown-font);
-      line-height: 1.15;
-      text-align: center;
-
-      -webkit-user-select: none; user-select: none;
-      -webkit-touch-callout: none;
-      pointer-events: none;                      /* no bloquea el scroll */
-
-      white-space: nowrap;                       /* una sola línea */
+      /* Una línea, compacto, y sin bloquear el scroll */
       display: inline-flex;
-      align-items: baseline;
-      gap: .45em;
-      max-width: 92vw;                           /* nunca se pasa del ancho del móvil */
-      text-shadow: 0 1px 1px rgba(255,255,255,.35); /* leve realce sobre fondos claros */
+      align-items: flex-start;
+      gap: var(--gap-x);
+      white-space: nowrap;
+      max-width: 92vw;
+      pointer-events: none;
     }
 
-    /* Números con la misma estética de la fecha */
-    .countdown-card .num{
+    /* Cada bloque número + etiqueta */
+    .group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1.05;
+    }
+
+    /* Números grandes con la misma estética */
+    .num{
       font-family: 'Playfair Display', ui-serif, Georgia, serif;
-      font-variant-numeric: lining-nums;
+      font-size: var(--num-size);
+      font-weight: 700;
       letter-spacing: .02em;
+      color: var(--text-color);
+      text-shadow: var(--shadow);
+    }
+    /* Contorno blanco sutil si el navegador lo soporta (mejora legibilidad) */
+    @supports (-webkit-text-stroke: 1px white) {
+      .num { -webkit-text-stroke: 0.6px var(--stroke-color); text-shadow: none; }
     }
 
-    /* Contorno blanco sutil a los números (si el navegador lo soporta) */
+    /* Etiquetas debajo de cada número */
+    .label{
+      font-size: var(--label-size);
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    /* Separador “ : ” entre grupos */
+    .sep{
+      font-size: var(--num-size);
+      font-weight: 700;
+      letter-spacing: var(--sep-space);
+      align-self: center;
+      margin: 0 .05em;
+      color: var(--text-color);
+      text-shadow: var(--shadow);
+    }
     @supports (-webkit-text-stroke: 1px white) {
-      .countdown-card .num{
-        -webkit-text-stroke: 0.6px rgba(255,255,255,.75);
-        text-shadow: none; /* con stroke ya no hace falta sombra en los números */
+      .sep { -webkit-text-stroke: 0.6px var(--stroke-color); text-shadow: none; }
+    }
+
+    /* Un poco más compacto en pantallas muy angostas */
+    @media (max-width: 360px){
+      :root{
+        --num-size: clamp(16px, 6vw, 32px);
+        --label-size: clamp(10px, 2.6vw, 11px);
+        --gap-x: .35em;
+        --sep-space: 0;
       }
     }
-
-    .countdown-card .unit{ font-weight: 700; }
-    .countdown-card .emoji{ margin-right: .25em; }
   </style>
 </head>
 <body>
   <!-- 1) Portada -->
   <img src="1.png" alt="Los XV de Clari - portada" loading="eager">
 
-  <!-- 2) Fecha: imagen + contador superpuesto -->
+  <!-- 2) Fecha + contador -->
   <figure class="foto2" aria-label="Fecha y horario">
     <img src="2.png" alt="Los XV de Clari - fecha" loading="lazy">
-    <div class="countdown-card" aria-live="polite" aria-atomic="true">
-      <span class="emoji" aria-hidden="true">⏳</span>
-      <span id="contador">Cargando…</span>
+
+    <!-- === RELOJ: estilo “59 : 04 : 46 : 05” con etiquetas debajo === -->
+    <div class="countdown" aria-live="polite" aria-atomic="true">
+      <div class="group">
+        <span class="num" id="cd-d">--</span>
+        <span class="label">DÍAS</span>
+      </div>
+      <span class="sep">:</span>
+      <div class="group">
+        <span class="num" id="cd-h">--</span>
+        <span class="label">HORAS</span>
+      </div>
+      <span class="sep">:</span>
+      <div class="group">
+        <span class="num" id="cd-m">--</span>
+        <span class="label">MINUTOS</span>
+      </div>
+      <span class="sep">:</span>
+      <div class="group">
+        <span class="num" id="cd-s">--</span>
+        <span class="label">SEGUNDOS</span>
+      </div>
     </div>
   </figure>
 
@@ -103,44 +153,43 @@
   <img src="5.png" alt="Los XV de Clari - confirmación" loading="lazy">
 
   <script>
-    // ✅ Construcción por componentes (julio = 6) para evitar ambigüedad de zona horaria
+    // Fecha del evento en hora local (Argentina). Julio = 6 (0-based).
     const fechaEvento = new Date(2026, 6, 18, 20, 0, 0).getTime();
-    const el = document.getElementById("contador");
 
-    // ceros a la izquierda
+    // Referencias a cada span
+    const elD = document.getElementById('cd-d');
+    const elH = document.getElementById('cd-h');
+    const elM = document.getElementById('cd-m');
+    const elS = document.getElementById('cd-s');
+
     const z2 = n => String(n).padStart(2,'0');
-    const wrapNum = n => `<span class="num">${n}</span>`;
-    const unit = u => `<span class="unit">${u}</span>`;
+    const zN = n => String(n).padStart(n >= 100 ? 3 : 2, '0'); // días puede tener 3 dígitos
 
     function render() {
       const ahora = Date.now();
       const diff  = fechaEvento - ahora;
 
       if (diff <= 0) {
-        el.textContent = "🎉 ¡Hoy es el gran día! 🎉";
-        clearInterval(timer);
+        elD.textContent = '00';
+        elH.textContent = '00';
+        elM.textContent = '00';
+        elS.textContent = '00';
         return;
       }
 
-      const dias     = Math.floor(diff / (1000*60*60*24));
-      const horas    = Math.floor((diff / (1000*60*60)) % 24);
-      const minutos  = Math.floor((diff / (1000*60)) % 60);
-      const segundos = Math.floor((diff / 1000) % 60);
+      const d = Math.floor(diff / (1000*60*60*24));
+      const h = Math.floor((diff / (1000*60*60)) % 24);
+      const m = Math.floor((diff / (1000*60)) % 60);
+      const s = Math.floor((diff / 1000) % 60);
 
-      const nbsp = "&nbsp;";
-      // Versión compacta para que entre en una sola línea y sin fondo
-      el.innerHTML =
-        `${wrapNum(dias)}${nbsp}${unit("d")}, ` +
-        `${wrapNum(z2(horas))}${nbsp}${unit("hs")} · ` +
-        `${wrapNum(z2(minutos))}${nbsp}${unit("m")} · ` +
-        `${wrapNum(z2(segundos))}${nbsp}${unit("s")}`;
+      elD.textContent = zN(d);
+      elH.textContent = z2(h);
+      elM.textContent = z2(m);
+      elS.textContent = z2(s);
     }
 
-    render();                               // primer render
-    const timer = setInterval(render, 1000);
-    addEventListener("orientationchange", () => setTimeout(render, 250));
-    addEventListener("resize", () => setTimeout(render, 150));
+    render();
+    setInterval(render, 1000);
   </script>
 </body>
 </html>
-``
