@@ -5,17 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Los XV de Clari</title>
   <style>
-    /* Reset mínimo */
-    html, body { height: 100%; margin: 0; background: #fff; scroll-behavior: smooth; }
+    /* Reset y suavizado de scroll */
+    html, body { height: 100%; margin: 0; background: #ffffff; scroll-behavior: smooth; }
     a { color: inherit; text-decoration: none; }
 
-    /* Contenedor que scrollea a pantalla completa */
+    /* Contenedor que scrollea a pantalla completa con "encaje" por secciones */
     .wrapper {
       height: 100vh;
       overflow-y: auto;
-      overscroll-behavior-y: contain;         /* evita rebotes en mobile */
-      scroll-snap-type: y mandatory;          /* “encaje” por panel */
-      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: y mandatory;      /* encaje vertical obligatorio */
+      -webkit-overflow-scrolling: touch;  /* scroll suave en iOS */
+      overscroll-behavior-y: contain;     /* evita rebote */
     }
 
     /* Cada panel ocupa 100% del viewport */
@@ -25,18 +25,18 @@
       display: grid;
       place-items: center;
       scroll-snap-align: start;
-      background: #fff;                        /* sin alterar el fondo de la imagen */
+      background: #ffffff; /* no alteramos el fondo de la imagen */
     }
 
-    /* La imagen se ve completa, sin recorte ni deformación */
+    /* Mostramos cada imagen entera, sin recorte ni deformación */
     .panel > img {
       width: 100%;
       height: 100%;
-      object-fit: contain;                    /* muestra la imagen entera */
+      object-fit: contain;   /* imagen completa dentro del viewport */
       display: block;
     }
 
-    /* Puntos laterales de navegación (no tapan la imagen) */
+    /* Puntos de navegación laterales (no tapan la imagen) */
     .dots {
       position: fixed;
       right: 12px;
@@ -49,10 +49,11 @@
       pointer-events: auto;
     }
     .dot {
-      width: 10px; height: 10px; border-radius: 999px;
+      width: 10px; height: 10px; border-radius: 50%;
       background: rgba(0,0,0,.35);
       border: 1px solid rgba(255,255,255,.6);
       transition: transform .15s ease, background .15s ease;
+      display: inline-block;
     }
     .dot:hover { transform: scale(1.2); }
     .dot.active { background: rgba(0,0,0,.75); }
@@ -74,4 +75,63 @@
       user-select: none;
     }
 
-    @media (hover: none) and (pointer: coarse) { /* en mobile, dots un poquito más grandes */
+    @media (hover: none) and (pointer: coarse) {
+      .dot { width: 12px; height: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navegación por puntos (anchors a las secciones) -->
+  <nav class="dots" aria-label="Navegación de secciones">
+    <a class="dot" href="#s1" aria-label="Ir a sección 1"></a>
+    <a class="dot" href="#s2" aria-label="Ir a sección 2"></a>
+    <a class="dot" href="#s3" aria-label="Ir a sección 3"></a>
+    <a class="dot" href="#s4" aria-label="Ir a sección 4"></a>
+    <a class="dot" href="#s5" aria-label="Ir a sección 5"></a>
+  </nav>
+
+  <div class="hint">Deslizá ↕</div>
+
+  <!-- UNA SOLA PÁGINA: 5 paneles full-screen con tus imágenes intactas -->
+  <main class="wrapper">
+    <section id="s1" class="panel" aria-label="Portada">
+      <img src="1.png" alt="Los XV de Clari">
+    </section>
+
+    <section id="s2" class="panel" aria-label="Fecha y horario">
+      <img src="2.png" alt="Fecha y horario del evento">
+    </section>
+
+    <section id="s3" class="panel" aria-label="Ubicación">
+      <img src="3.png" alt="Ubicación">
+    </section>
+
+    <section id="s4" class="panel" aria-label="Dress code">
+      <img src="4.png" alt="Dress code">
+    </section>
+
+    <section id="s5" class="panel" aria-label="Confirmación">
+      <img src="5.png" alt="Confirmación de asistencia">
+    </section>
+  </main>
+
+  <script>
+    // Resaltar el punto activo según la sección visible
+    const dots = Array.from(document.querySelectorAll('.dots .dot'));
+    const wrapper = document.querySelector('.wrapper');
+    const sections = Array.from(document.querySelectorAll('.panel'));
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const idx = sections.indexOf(entry.target);
+          dots.forEach(d => d.classList.remove('active'));
+          if (idx >= 0) dots[idx].classList.add('active');
+        }
+      });
+    }, { root: wrapper, threshold: 0.6 });
+
+    sections.forEach(s => io.observe(s));
+  </script>
+</body>
+</html>
