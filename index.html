@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <!-- viewport-fit=cover usa todo el alto útil en iPhone (notch) -->
+  <!-- viewport-fit=cover usa todo el alto útil en iPhone (con notch) -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Los XV de Clari</title>
   <style>
@@ -18,6 +18,8 @@
       scroll-snap-type: y mandatory;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior-y: contain;
+      /* Si querés camuflar las franjas con un gris suave, cambiá #ffffff por #f3f1ef */
+      background: #ffffff;
     }
 
     /* Cada panel ocupa toda la pantalla */
@@ -27,14 +29,14 @@
       min-height: 100vh;
       scroll-snap-align: start;
       display: grid; place-items: center;
-      background: #ffffff;      /* NO altera la imagen; sólo “marco” si sobra espacio */
+      background: inherit;      /* mismo color que el wrapper */
     }
 
-    /* Mostrar SIEMPRE la imagen completa (sin recortes ni deformación) */
+    /* Mostrar SIEMPRE la imagen completa (sin recorte ni deformación) */
     .panel > img{
       width: 100%;
       height: 100%;
-      object-fit: contain;      /* se ve entera; puede dejar franjas arriba/abajo o laterales */
+      object-fit: contain;      /* se ve entera; puede dejar franjas si no coincide la proporción */
       object-position: center;
       display: block;
       -webkit-user-select: none; user-select: none;
@@ -45,24 +47,25 @@
 <body>
   <main class="wrapper" aria-label="Invitación de Clari">
     <section class="panel" aria-label="Portada">
-      1.png
+      <img src="1.png" alt="Los XV de Clari">
     </section>
 
     <section class="panel" aria-label="Fecha y horario">
-      2.png
+      <img src="2.png" alt="Fecha y horario">
     </section>
 
     <section class="panel" aria-label="Ubicación">
-      3.png
+      <img src="3.png" alt="Ubicación">
     </section>
 
     <section class="panel" aria-label="Dress code">
-      4.png
+      <img src="4.png" alt="Dress code">
     </section>
 
     <section class="panel" aria-label="Confirmación">
-      5.png
+      <img src="5.png" alt="Confirmación">
     </section>
   </main>
 </body>
 </html>
+``
