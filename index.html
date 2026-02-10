@@ -13,15 +13,12 @@
 
   <style>
     :root{
-      /* 🔧 Ajustes rápidos del contador */
-      --countdown-font: clamp(18px, 6.2vw, 40px);    /* tamaño grande y responsivo */
-      --countdown-pad-y: clamp(8px, 2.2vw, 16px);
-      --countdown-pad-x: clamp(14px, 4.2vw, 24px);
-      --countdown-blur: 8px;
-      --countdown-bg: rgba(255,255,255,0.90);
-      --countdown-color: #000;
-      --countdown-border: rgba(0,0,0,0.12);
-      --countdown-bottom: clamp(10px, 5.5vw, 44px);
+      /* 🔧 Ajustes del contador (más chico) */
+      --countdown-font: clamp(15px, 4.5vw, 28px);    /* ↓ reducido para que entre cómodo */
+      --countdown-pad-y: clamp(6px, 1.6vw, 10px);    /* ↓ menos padding */
+      --countdown-pad-x: clamp(10px, 3.2vw, 16px);
+      --countdown-bottom: clamp(8px, 4.2vw, 28px);   /* un poco más arriba del borde */
+      --countdown-color: #000;                       /* texto negro */
     }
 
     /* Sin márgenes y sin espacios entre imágenes */
@@ -33,7 +30,7 @@
     /* Contenedor de la segunda imagen para superponer el contador */
     .foto2 { position: relative; }
 
-    /* Contador superpuesto con buen comportamiento en mobile */
+    /* Contador superpuesto: transparente, compacto y siempre una línea */
     .countdown-card {
       position: absolute;
       left: 50%;
@@ -41,62 +38,46 @@
       bottom: calc(env(safe-area-inset-bottom, 0px) + var(--countdown-bottom));
       z-index: 2;
 
-      max-width: min(92vw, 720px);     /* nunca se pasa del ancho del teléfono */
-      background: var(--countdown-bg);
-      color: var(--countdown-color);
-      border: 1px solid var(--countdown-border);
-      border-radius: 999px;
+      /* SIN fondo, SIN borde, SIN blur → se ve el fondo de la imagen */
+      background: transparent;
+      border: 0;
       padding: var(--countdown-pad-y) var(--countdown-pad-x);
 
+      color: var(--countdown-color);
       font-weight: 700;
       font-size: var(--countdown-font);
       line-height: 1.15;
       text-align: center;
 
-      -webkit-backdrop-filter: blur(var(--countdown-blur));
-      backdrop-filter: blur(var(--countdown-blur));
-
       -webkit-user-select: none; user-select: none;
       -webkit-touch-callout: none;
+      pointer-events: none;                      /* no bloquea el scroll */
 
-      /* Típicamente una sola línea */
-      white-space: nowrap;
+      white-space: nowrap;                       /* una sola línea */
       display: inline-flex;
       align-items: baseline;
-      gap: .5em;
+      gap: .45em;
+      max-width: 92vw;                           /* nunca se pasa del ancho del móvil */
+      text-shadow: 0 1px 1px rgba(255,255,255,.35); /* leve realce sobre fondos claros */
     }
 
-    /* Números con tipografía elegante (igual estética que la fecha) */
+    /* Números con la misma estética de la fecha */
     .countdown-card .num{
       font-family: 'Playfair Display', ui-serif, Georgia, serif;
       font-variant-numeric: lining-nums;
       letter-spacing: .02em;
     }
 
-    .countdown-card .unit{
-      font-weight: 700;
-    }
-
-    .countdown-card .emoji{
-      margin-right: .25em;
-    }
-
-    /* 📱 MODO COMPACTO para pantallas muy angostas */
-    @media (max-width: 360px){
-      .countdown-card{
-        /* Permitimos salto si hiciera falta y reducimos huecos */
-        white-space: nowrap;    /* mantenemos una línea compacta */
-        gap: .35em;
-        font-size: clamp(16px, 5.2vw, 26px);
-        padding: calc(var(--countdown-pad-y) * .85) calc(var(--countdown-pad-x) * .9);
+    /* Contorno blanco sutil a los números (si el navegador lo soporta) */
+    @supports (-webkit-text-stroke: 1px white) {
+      .countdown-card .num{
+        -webkit-text-stroke: 0.6px rgba(255,255,255,.75);
+        text-shadow: none; /* con stroke ya no hace falta sombra en los números */
       }
-      .countdown-card .long { display: none; }  /* ocultamos etiquetas largas */
-      .countdown-card .short { display: inline; }
     }
 
-    /* En pantallas mayores mostramos texto completo */
-    .countdown-card .short { display: none; }
-    .countdown-card .long  { display: inline; }
+    .countdown-card .unit{ font-weight: 700; }
+    .countdown-card .emoji{ margin-right: .25em; }
   </style>
 </head>
 <body>
@@ -126,11 +107,10 @@
     const fechaEvento = new Date(2026, 6, 18, 20, 0, 0).getTime();
     const el = document.getElementById("contador");
 
-    // Formato con ceros a la izquierda (01, 02, etc.)
+    // ceros a la izquierda
     const z2 = n => String(n).padStart(2,'0');
     const wrapNum = n => `<span class="num">${n}</span>`;
-    const unit = (txtLong, txtShort) =>
-      `<span class="unit"><span class="long">${txtLong}</span><span class="short">${txtShort}</span></span>`;
+    const unit = u => `<span class="unit">${u}</span>`;
 
     function render() {
       const ahora = Date.now();
@@ -147,20 +127,20 @@
       const minutos  = Math.floor((diff / (1000*60)) % 60);
       const segundos = Math.floor((diff / 1000) % 60);
 
-      // Mantiene espacios no separables entre número y unidad (no salta de línea)
       const nbsp = "&nbsp;";
+      // Versión compacta para que entre en una sola línea y sin fondo
       el.innerHTML =
-        `${wrapNum(dias)}${nbsp}${unit("días", "d")}, ` +
-        `${wrapNum(z2(horas))}${nbsp}${unit("hs", "h")} · ` +
-        `${wrapNum(z2(minutos))}${nbsp}${unit("min", "m")} · ` +
-        `${wrapNum(z2(segundos))}${nbsp}${unit("seg", "s")}`;
+        `${wrapNum(dias)}${nbsp}${unit("d")}, ` +
+        `${wrapNum(z2(horas))}${nbsp}${unit("hs")} · ` +
+        `${wrapNum(z2(minutos))}${nbsp}${unit("m")} · ` +
+        `${wrapNum(z2(segundos))}${nbsp}${unit("s")}`;
     }
 
     render();                               // primer render
     const timer = setInterval(render, 1000);
-    // Recalcular en cambios de orientación / resize
     addEventListener("orientationchange", () => setTimeout(render, 250));
     addEventListener("resize", () => setTimeout(render, 150));
   </script>
 </body>
 </html>
+``
