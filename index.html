@@ -2,62 +2,79 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <!-- viewport-fit=cover permite usar todo el área en iPhone (notch) -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Los XV de Clari</title>
   <style>
-    /* Reset y comportamiento de scroll */
     html, body { margin: 0; height: 100%; background: #ffffff; }
-    /* Contenedor que scrollea a pantalla completa, con “encaje” por panel */
+
+    /* Contenedor con scroll por panel y altura fiable en iOS/Android */
     .wrapper{
-      height: 100dvh;               /* alto dinámico (iOS/Android modernos) */
-      height: 100svh;               /* fallback en navegadores que soportan svh */
-      min-height: 100vh;            /* fallback genérico */
+      height: 100dvh;           /* viewport dinámico (iOS/Android modernos) */
+      height: 100svh;           /* fallback moderno */
+      min-height: 100vh;        /* fallback genérico */
       overflow-y: auto;
-      scroll-snap-type: y mandatory;/* encaje vertical */
+      scroll-snap-type: y mandatory;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior-y: contain;
     }
-    /* Cada sección ocupa todo el viewport */
+
+    /* Panel a pantalla completa */
     .panel{
       height: 100dvh;
       height: 100svh;
       min-height: 100vh;
       scroll-snap-align: start;
       display: grid; place-items: center;
-      background: #ffffff;          /* no afecta la imagen; evita flashes oscuros al cargar */
+      background: #ffffff;      /* no toca la imagen */
     }
-    /* Imagen a pantalla completa (full-bleed) */
+
+    /* Regla por defecto: FULL-BLEED (cover) */
     .panel > img{
       width: 100%;
       height: 100%;
-      object-fit: cover;            /* llena la pantalla; puede recortar un poco los bordes */
+      object-fit: cover;        /* llena la pantalla; recorta un poco si hace falta */
+      object-position: center;  /* centrado por defecto */
       display: block;
       -webkit-user-select: none; user-select: none;
       -webkit-touch-callout: none;
     }
+
+    /* EXCEPCIÓN: imagen entera (sin recorte) para la #2 */
+    .panel--contain > img{
+      object-fit: contain;      /* se ve completa; puede dejar pequeñas franjas */
+      background: #ffffff;      /* mismo color que la página (no “ensucia”) */
+    }
+
+    /* Si alguna imagen necesita “enfocar” otra zona en cover, podés usar: */
+    /* .pos-top > img    { object-position: 50% 10%; } */
+    /* .pos-bottom > img { object-position: 50% 90%; } */
   </style>
 </head>
 <body>
   <main class="wrapper" aria-label="Invitación de Clari">
+    <!-- Portada: full-bleed -->
     <section class="panel" aria-label="Portada">
-      <img src="1.png" alt="Los XV de Clari" loading="eager" fetchpriority="high">
+      <img src="1.png" alt="Los XV de Clari">
     </section>
 
-    <section class="panel" aria-label="Fecha y horario">
-      <img src="2.png" alt="Fecha y horario del evento" loading="lazy">
+    <!-- Fecha: SIN recorte para que se lea completa -->
+    <section class="panel panel--contain" aria-label="Fecha y horario">
+      <img src="2.png" alt="Fecha y horario">
     </section>
 
+    <!-- Ubicación: full-bleed -->
     <section class="panel" aria-label="Ubicación">
-      <img src="3.png" alt="Ubicación: Vista Río Eventos, Av. Arturo Illia 1690, Rosario" loading="lazy">
+      <img src="3.png" alt="Ubicación - Av. Arturo Illia 1690, Rosario">
     </section>
 
+    <!-- Dress code: full-bleed -->
     <section class="panel" aria-label="Dress code">
-      <img src="4.png" alt="Dress code: Elegante sport. Evitar dorado, plateado y azul" loading="lazy">
+      <img src="4.png" alt="Dress code: Elegante sport. No dorado, plateado ni azul.">
     </section>
 
+    <!-- Confirmación: full-bleed -->
     <section class="panel" aria-label="Confirmación">
-      <img src="5.png" alt="Confirmá tu asistencia" loading="lazy">
+      <img src="5.png" alt="Confirmá tu asistencia">
     </section>
   </main>
 </body>
