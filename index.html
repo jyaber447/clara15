@@ -9,24 +9,19 @@
   <!-- 🔤 Fuente elegante tipo Didona (similar a la del arte) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <!-- Opción A (recomendada): Playfair Display -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
-  <!-- Opción B (alternativa): Bodoni Moda -->
-  <!-- <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@600;700;800&display=swap" rel="stylesheet"> -->
-  <!-- Opción C (alternativa): Cinzel -->
-  <!-- <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&display=swap" rel="stylesheet"> -->
 
   <style>
     :root{
       /* 🔧 Ajustes rápidos del contador */
-      --countdown-font: clamp(22px, 8vw, 44px);     /* tamaño grande y responsivo */
-      --countdown-pad-y: clamp(10px, 2.6vw, 18px);  /* padding vertical */
-      --countdown-pad-x: clamp(16px, 5vw, 28px);    /* padding horizontal */
-      --countdown-blur: 8px;                        /* blur del fondo */
-      --countdown-bg: rgba(255,255,255,0.88);       /* pill clarito */
+      --countdown-font: clamp(18px, 6.2vw, 40px);    /* tamaño grande y responsivo */
+      --countdown-pad-y: clamp(8px, 2.2vw, 16px);
+      --countdown-pad-x: clamp(14px, 4.2vw, 24px);
+      --countdown-blur: 8px;
+      --countdown-bg: rgba(255,255,255,0.90);
       --countdown-color: #000;
       --countdown-border: rgba(0,0,0,0.12);
-      --countdown-bottom: min(8vw, 40px);           /* separación del borde inferior */
+      --countdown-bottom: clamp(10px, 5.5vw, 44px);
     }
 
     /* Sin márgenes y sin espacios entre imágenes */
@@ -38,13 +33,15 @@
     /* Contenedor de la segunda imagen para superponer el contador */
     .foto2 { position: relative; }
 
-    /* Contador superpuesto (el bloque) */
+    /* Contador superpuesto con buen comportamiento en mobile */
     .countdown-card {
       position: absolute;
       left: 50%;
-      transform: translateX(-50%);
-      bottom: var(--countdown-bottom);
+      transform: translateX(-50%) translateZ(0);
+      bottom: calc(env(safe-area-inset-bottom, 0px) + var(--countdown-bottom));
+      z-index: 2;
 
+      max-width: min(92vw, 720px);     /* nunca se pasa del ancho del teléfono */
       background: var(--countdown-bg);
       color: var(--countdown-color);
       border: 1px solid var(--countdown-border);
@@ -61,27 +58,57 @@
 
       -webkit-user-select: none; user-select: none;
       -webkit-touch-callout: none;
-      /* Si preferís la misma fuente en TODO el contador, descomentá: */
-      /* font-family: 'Playfair Display', ui-serif, Georgia, serif; */
+
+      /* Típicamente una sola línea */
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: baseline;
+      gap: .5em;
     }
 
-    /* 👇 Solo los números con la fuente elegante (misma estética de la fecha) */
+    /* Números con tipografía elegante (igual estética que la fecha) */
     .countdown-card .num{
-      font-family: 'Playfair Display', ui-serif, Georgia, serif; /* cambia acá a Bodoni/Cinzel si querés */
-      font-variant-numeric: lining-nums; /* números “de línea” modernos */
-      letter-spacing: .04em;             /* leve tracking para look de invitación */
+      font-family: 'Playfair Display', ui-serif, Georgia, serif;
+      font-variant-numeric: lining-nums;
+      letter-spacing: .02em;
     }
+
+    .countdown-card .unit{
+      font-weight: 700;
+    }
+
+    .countdown-card .emoji{
+      margin-right: .25em;
+    }
+
+    /* 📱 MODO COMPACTO para pantallas muy angostas */
+    @media (max-width: 360px){
+      .countdown-card{
+        /* Permitimos salto si hiciera falta y reducimos huecos */
+        white-space: nowrap;    /* mantenemos una línea compacta */
+        gap: .35em;
+        font-size: clamp(16px, 5.2vw, 26px);
+        padding: calc(var(--countdown-pad-y) * .85) calc(var(--countdown-pad-x) * .9);
+      }
+      .countdown-card .long { display: none; }  /* ocultamos etiquetas largas */
+      .countdown-card .short { display: inline; }
+    }
+
+    /* En pantallas mayores mostramos texto completo */
+    .countdown-card .short { display: none; }
+    .countdown-card .long  { display: inline; }
   </style>
 </head>
 <body>
   <!-- 1) Portada -->
   <img src="1.png" alt="Los XV de Clari - portada" loading="eager">
 
-  <!-- 2) Fecha: imagen + contador superpuesto GRANDE -->
+  <!-- 2) Fecha: imagen + contador superpuesto -->
   <figure class="foto2" aria-label="Fecha y horario">
     <img src="2.png" alt="Los XV de Clari - fecha" loading="lazy">
-    <div class="countdown-card">
-      <span id="contador">Cargando contador…</span>
+    <div class="countdown-card" aria-live="polite" aria-atomic="true">
+      <span class="emoji" aria-hidden="true">⏳</span>
+      <span id="contador">Cargando…</span>
     </div>
   </figure>
 
@@ -95,35 +122,45 @@
   <img src="5.png" alt="Los XV de Clari - confirmación" loading="lazy">
 
   <script>
-    // 👉 CAMBIÁ ESTA FECHA/HORA SI ES NECESARIO (zona local del dispositivo)
-    const fechaEvento = new Date("2026-07-18T20:00:00").getTime();
-    const contadorEl = document.getElementById("contador");
+    // ✅ Construcción por componentes (julio = 6) para evitar ambigüedad de zona horaria
+    const fechaEvento = new Date(2026, 6, 18, 20, 0, 0).getTime();
+    const el = document.getElementById("contador");
 
-    // helper para envolver números con <span class="num">...</span>
-    const wrapNum = (n) => `<span class="num">${n}</span>`;
+    // Formato con ceros a la izquierda (01, 02, etc.)
+    const z2 = n => String(n).padStart(2,'0');
+    const wrapNum = n => `<span class="num">${n}</span>`;
+    const unit = (txtLong, txtShort) =>
+      `<span class="unit"><span class="long">${txtLong}</span><span class="short">${txtShort}</span></span>`;
 
-    function tick() {
+    function render() {
       const ahora = Date.now();
-      const diff = fechaEvento - ahora;
+      const diff  = fechaEvento - ahora;
 
       if (diff <= 0) {
-        contadorEl.textContent = "🎉 ¡Hoy es el gran día! 🎉";
+        el.textContent = "🎉 ¡Hoy es el gran día! 🎉";
         clearInterval(timer);
         return;
       }
 
-      const dias     = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const horas    = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const minutos  = Math.floor((diff / (1000 * 60)) % 60);
+      const dias     = Math.floor(diff / (1000*60*60*24));
+      const horas    = Math.floor((diff / (1000*60*60)) % 24);
+      const minutos  = Math.floor((diff / (1000*60)) % 60);
       const segundos = Math.floor((diff / 1000) % 60);
 
-      contadorEl.innerHTML =
-        `⏳ ${wrapNum(dias)} días, ${wrapNum(horas)} hs, ${wrapNum(minutos)} min y ${wrapNum(segundos)} seg`;
+      // Mantiene espacios no separables entre número y unidad (no salta de línea)
+      const nbsp = "&nbsp;";
+      el.innerHTML =
+        `${wrapNum(dias)}${nbsp}${unit("días", "d")}, ` +
+        `${wrapNum(z2(horas))}${nbsp}${unit("hs", "h")} · ` +
+        `${wrapNum(z2(minutos))}${nbsp}${unit("min", "m")} · ` +
+        `${wrapNum(z2(segundos))}${nbsp}${unit("seg", "s")}`;
     }
 
-    tick();                       // primer render inmediato
-    const timer = setInterval(tick, 1000);
+    render();                               // primer render
+    const timer = setInterval(render, 1000);
+    // Recalcular en cambios de orientación / resize
+    addEventListener("orientationchange", () => setTimeout(render, 250));
+    addEventListener("resize", () => setTimeout(render, 150));
   </script>
 </body>
 </html>
-
