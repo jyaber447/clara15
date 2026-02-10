@@ -6,66 +6,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Los XV de Clari</title>
   <style>
-    /* Reset básico */
-    html, body { margin: 0; height: 100%; background: #ffffff; }
-
-    /* Contenedor con scroll “encajado” por panel y altura fiable en iOS/Android */
-    .wrapper{
-      height: 100dvh;           /* viewport dinámico moderno */
-      height: 100svh;           /* fallback moderno */
-      min-height: 100vh;        /* fallback genérico */
-      overflow-y: auto;
-      scroll-snap-type: y mandatory;
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior-y: contain;
-      /* Si querés camuflar las franjas con un gris suave, cambiá #ffffff por #f3f1ef */
-      background: #ffffff;
-    }
-
-    /* Cada panel ocupa toda la pantalla */
-    .panel{
-      height: 100dvh;
-      height: 100svh;
-      min-height: 100vh;
-      scroll-snap-align: start;
-      display: grid; place-items: center;
-      background: inherit;      /* mismo color que el wrapper */
-    }
-
-    /* Mostrar SIEMPRE la imagen completa (sin recorte ni deformación) */
-    .panel > img{
-      width: 100%;
-      height: 100%;
-      object-fit: contain;      /* se ve entera; puede dejar franjas si no coincide la proporción */
-      object-position: center;
-      display: block;
-      -webkit-user-select: none; user-select: none;
-      -webkit-touch-callout: none;
-    }
+    /* Sin márgenes y sin espacios entre imágenes */
+    html, body { margin: 0; background: #ffffff; }
+    /* Cada imagen ocupa todo el ancho, conserva proporción y elimina huecos */
+    img { display: block; width: 100%; height: auto; margin: 0; padding: 0; border: 0; }
   </style>
 </head>
 <body>
-  <main class="wrapper" aria-label="Invitación de Clari">
-    <section class="panel" aria-label="Portada">
-      <img src="1.png" alt="Los XV de Clari">
-    </section>
-
-    <section class="panel" aria-label="Fecha y horario">
-      <img src="2.png" alt="Fecha y horario">
-    </section>
-
-    <section class="panel" aria-label="Ubicación">
-      <img src="3.png" alt="Ubicación">
-    </section>
-
-    <section class="panel" aria-label="Dress code">
-      <img src="4.png" alt="Dress code">
-    </section>
-
-    <section class="panel" aria-label="Confirmación">
-      <img src="5.png" alt="Confirmación">
-    </section>
-  </main>
+  <!-- IMPORTANTE: los PNG deben estar junto a este archivo -->
+  <img src="1.png" alt="Los XV de Clari - portada" loading="eager">
+  <img src="2.png" alt="Los XV de Clari - fecha" loading="lazy">
+  <img src="3.png" alt="Los XV de Clari - ubicación" loading="lazy">
+  <img src="4.png" alt="Los XV de Clari - dress code" loading="lazy">
+  <img src="5.png" alt="Los XV de Clari - confirmación" loading="lazy">
 </body>
 </html>
-``
