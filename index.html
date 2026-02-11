@@ -27,12 +27,19 @@
       --text-color: #000;
       --stroke-color: rgba(255,255,255,.75); /* contorno claro (si lo soporta) */
       --shadow: 0 1px 1px rgba(255,255,255,.35);
+
+      /* ===== Hotspot (link) sobre el botón del arte en la IMAGEN 5 =====
+         Ajustá estos porcentajes si no calza exactamente: */
+      --cta-top: 62%;      /* ↑ abajo/arriba */
+      --cta-left: 6%;      /* ←→ izquierda/derecha */
+      --cta-width: 88%;    /* ↔ ancho del botón */
+      --cta-height: 22%;   /* ↕ alto del botón */
     }
 
     /* Reset */
     html, body { margin: 0; background: #ffffff; }
     img { display:block; width:100%; height:auto; border:0; margin:0; padding:0; }
-    figure { margin: 0; }            /* <- evita diferencias en la imagen 2 */
+    figure { margin: 0; }  /* evita diferencias en la imagen 2 */
 
     /* ====== CONTADOR (overlay transparente en la imagen 2) ====== */
     .foto2 { position: relative; }
@@ -43,10 +50,7 @@
       transform: translateX(-50%);            /* centrado horizontal */
       z-index: 2;
 
-      /* === FONDO pedido (bokeh dorado + velo blanco para contraste) ===
-         - Cambiá 'image.png' si tu archivo se llama distinto.
-         - El primer fondo es un velo blanco semitransparente (arriba).
-         - Debajo va la imagen con el bokeh dorado, centrada y en cover. */
+      /* Fondo suave (bokeh + velo blanco) */
       background:
         linear-gradient(rgba(255,255,255,.84), rgba(255,255,255,.84)),
         url('image.png') center/cover no-repeat;
@@ -122,6 +126,29 @@
         border-radius: 14px;
       }
     }
+
+    /* ===== HOTSPOT SOBRE LA IMAGEN 5 (link invisible) ===== */
+    .foto5 { position: relative; }
+    .hotspot-cta{
+      position: absolute;
+      left: var(--cta-left);
+      top: var(--cta-top);
+      width: var(--cta-width);
+      height: var(--cta-height);
+      display: block;
+      z-index: 3;
+
+      /* Enlace invisible: no altera la estética del arte */
+      background: transparent;
+      text-indent: -9999px;  /* oculta el texto accesible */
+      overflow: hidden;
+      border-radius: 20px;
+
+      /* DEBUG (para ajustar): descomentá estas 2 líneas para ver el rectángulo
+      outline: 2px dashed rgba(0,128,255,.45);
+      background: rgba(0,128,255,.10);
+      */
+    }
   </style>
 </head>
 <body>
@@ -162,8 +189,18 @@
   <!-- 4) Dress code -->
   <img src="4.png" alt="Los XV de Clari - dress code" loading="lazy">
 
-  <!-- 5) Confirmación -->
-  <img src="5.png" alt="Los XV de Clari - confirmación" loading="lazy">
+  <!-- 5) Confirmación (el botón está dibujado dentro de esta imagen) -->
+  <figure class="foto5" aria-label="Confirmación">
+    <img src="5.png" alt="Los XV de Clari - confirmación" loading="lazy">
+
+    <!-- 🔗 Hotspot: link invisible EXACTO sobre el botón del arte (ajustá variables) -->
+    <a
+      class="hotspot-cta"
+      href="https://jyaber447.github.io/clara15/Confirmacion.html"
+      aria-label="Confirmar asistencia"
+    >Confirmar asistencia</a>
+    <!-- Si querés abrir en otra pestaña, agregá: target="_blank" rel="noopener" -->
+  </figure>
 
   <script>
     // Fecha del evento en hora local (Argentina). Julio = 6 (0-based).
