@@ -7,6 +7,7 @@ B. la foto og.jpg es la que se usa para la previasualizacion cuando se envia el 
 C. fotos.html es para subir fotos durante la fiesta.
 Esta es la explicacion de como se implemento, ahora la subi a https://jyaber447.github.io/clara15/fotos.html
 /**************************************************************************************************************/
+
 Pasos para actulizar la pagina de fotos del cumple de clara 
 Hay 2 plataformas 
 1. https://console.firebase.google.com/project/clari-xv/storage/clari-xv.firebasestorage.app/files/~2Ffotos
@@ -35,6 +36,7 @@ luego seleccionar la carpeta invitacion y listo
 
 Las fotod que se suben desde la pagina brilliant-zuccutto-c8cb94.netlify.app se cargan en Firebase en 
  https://console.firebase.google.com/project/clari-xv/storage/clari-xv.firebasestorage.app/files/~2Ffotos
+ 
  /**************************************************************************************************************/
 
 
