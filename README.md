@@ -5,7 +5,7 @@ B. la foto og.jpg es la que se usa para la previasualizacion cuando se envia el 
    Tal vez sean necesario enviar el link de esta manera por whatsapp para engañar y que aparezca la prevializacion https://jyaber447.github.io/clara15/?v=2
 
 C. fotos.html es para subir fotos durante la fiesta.
-Esta es la explicacion de como se implemento, ahora la subi a https://jyaber447.github.io/clara15/fotos.html
+Esta es la explicacion de como se implemento, ahora la subi a https://jyaber447.github.io/clara15/fotos.html   (para eliminar fotos presinar la cruz y pide contraseña, la cual es clari15)
 /**************************************************************************************************************/
 
 Pasos para actulizar la pagina de fotos del cumple de clara 
