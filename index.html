@@ -30,10 +30,17 @@
 
       /* ===== Hotspot (link) sobre el botón del arte en la IMAGEN 5 =====
          Ajustá estos porcentajes si no calza exactamente: */
-      --cta-top: 15%;      /* ↑ abajo/arriba */
+      --cta-top: 15%;       /* ↑ abajo/arriba */
       --cta-left: 22%;      /* ←→ izquierda/derecha */
-      --cta-width: 58%;    /* ↔ ancho del botón */
-      --cta-height: 18%;   /* ↕ alto del botón */
+      --cta-width: 58%;     /* ↔ ancho del botón */
+      --cta-height: 18%;    /* ↕ alto del botón */
+
+      /* ===== Hotspot (link) sobre la IMAGEN 3 (UBICACIÓN) =====
+         Ajustá estos % si lo querés mover o cambiar de tamaño */
+      --maps-top:   40%;    /* ↑ arriba/abajo */
+      --maps-left:  33%;    /* ←→ izquierda/derecha */
+      --maps-width: 43%;    /* ↔ ancho del hotspot */
+      --maps-height:14%;    /* ↕ alto del hotspot */
     }
 
     /* Reset */
@@ -127,7 +134,30 @@
       }
     }
 
-    /* ===== HOTSPOT SOBRE LA IMAGEN 5 (link invisible) ===== */
+    /* ===== HOTSPOT SOBRE LA IMAGEN 3 (UBICACIÓN) ===== */
+    .foto3 { position: relative; }
+    .hotspot-maps{
+      position: absolute;
+      left: var(--maps-left);
+      top: var(--maps-top);
+      width: var(--maps-width);
+      height: var(--maps-height);
+      display: block;
+      z-index: 3;
+
+      /* invisible: no altera el arte */
+      background: transparent;
+      text-indent: -9999px;
+      overflow: hidden;
+      border-radius: 16px;
+
+      /* 🟦 DEBUG (para ajustar): descomentá 2 líneas para ver la caja
+      outline: 2px dashed rgba(0,128,255,.45);
+      background: rgba(0,128,255,.10);
+      */
+    }
+
+    /* ===== HOTSPOT SOBRE LA IMAGEN 5 (CONFIRMAR) ===== */
     .foto5 { position: relative; }
     .hotspot-cta{
       position: absolute;
@@ -183,8 +213,18 @@
     </div>
   </figure>
 
-  <!-- 3) Ubicación -->
-  <img src="3.png" alt="Los XV de Clari - ubicación" loading="lazy">
+  <!-- 3) Ubicación (con hotspot a Google Maps) -->
+  <figure class="foto3" aria-label="Ubicación">
+    <img src="3.png" alt="Los XV de Clari - ubicación" loading="lazy">
+
+    <!-- 🔗 Hotspot invisible sobre el área de “UBICACIÓN” -->
+    <a
+      class="hotspot-maps"
+      href="https://www.google.com/maps/place/Vista+Rio/@-32.9346487,-60.6458271,17z/data=!4m14!1m7!3m6!1s0x95b7ab4c8e4fa627:0xf1ce09e76e2c6bae!2sVista+Rio!8m2!3d-32.9346532!4d-60.6432522!16s%2Fg%2F11v3tsg4ly!3m5!1s0x95b7ab4c8e4fa627:0xf1ce09e76e2c6bae!8m2!3d-32.9346532!4d-60.6432522!16s%2Fg%2F11v3tsg4ly?entry=ttu&g_ep=EgoyMDI2MDIwOC4wIKXMDSoASAFQAw%3D%3D"
+      target="_blank" rel="noopener"
+      aria-label="Abrir ubicación en Google Maps"
+    >Abrir ubicación en Google Maps</a>
+  </figure>
 
   <!-- 4) Dress code -->
   <img src="4.png" alt="Los XV de Clari - dress code" loading="lazy">
@@ -243,9 +283,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
